@@ -181,6 +181,21 @@ export const GameContainer: React.FC<GameContainerProps> = ({ level, onBackToMen
           </div>
         </div>
       )}
+
+      {/* Portrait Mode Warning Overlay */}
+      <div className="hidden portrait:flex fixed inset-0 z-50 bg-black items-center justify-center text-center p-8 flex-col text-white font-mono">
+        <h2 className="text-2xl text-kani-green font-black mb-4 tracking-widest uppercase">
+          Rotate Device
+        </h2>
+        <p className="text-zinc-400 text-sm mb-8 leading-relaxed max-w-[250px]">
+          Kani Force is a side-scrolling arcade shooter designed for landscape orientation.
+        </p>
+        <div className="w-24 h-12 border-2 border-kani-green rounded-lg flex items-center justify-center animate-bounce">
+          <div className="w-16 h-8 bg-zinc-800 rounded flex items-center justify-center">
+            <span className="text-[10px] text-zinc-500">SCREEN</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

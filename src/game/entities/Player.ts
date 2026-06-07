@@ -224,7 +224,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const holdUp = keys.up.isDown || keys.upArrow.isDown || v_up;
     const holdDown = keys.down.isDown || keys.downArrow.isDown || v_down;
     const pressJump = Phaser.Input.Keyboard.JustDown(keys.jump) || virtualJustJumped;
-    const mouseShoot = this.scene.input.activePointer.leftButtonDown();
+    
+    // Disable touch-to-shoot on mobile so they don't fire while using the joystick
+    const isTouch = this.scene.sys.game.device.input.touch;
+    const mouseShoot = !isTouch && this.scene.input.activePointer.leftButtonDown();
     const holdShoot = keys.shoot.isDown || keys.shoot2.isDown || keys.shoot3.isDown || keys.shoot4.isDown || v_shoot || mouseShoot;
     if (isLadderNearby) {
       if (holdUp) {

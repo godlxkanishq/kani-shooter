@@ -232,13 +232,65 @@ export class HUDScene extends Phaser.Scene {
       return btn;
     };
 
-    // D-Pad on the left side
-    const padX = 80;
-    const padY = height - 100;
-    createBtn(padX, padY - 55, '▲', 'v_up');
-    createBtn(padX, padY + 55, '▼', 'v_down');
-    createBtn(padX - 55, padY, '◀', 'v_left');
-    createBtn(padX + 55, padY, '▶', 'v_right');
+    // Floating Joystick on the left side
+    const joyBaseDefaultX = 100;
+    const joyBaseDefaultY = height - 100;
+    const joyRadius = 60;
+
+    const joyBase = this.add.circle(joyBaseDefaultX, joyBaseDefaultY, joyRadius, this.levelColor, 0.2);
+    const joyThumb = this.add.circle(joyBaseDefaultX, joyBaseDefaultY, 30, this.levelColor, 0.6);
+    
+    let activeJoyPointer: Phaser.Input.Pointer | null = null;
+
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      if (pointer.x < width / 2 && !activeJoyPointer) {
+        activeJoyPointer = pointer;
+        joyBase.setPosition(pointer.x, pointer.y);
+        joyThumb.setPosition(pointer.x, pointer.y);
+        joyBase.setAlpha(0.4);
+        joyThumb.setAlpha(0.9);
+      }
+    });
+
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (activeJoyPointer && pointer.id === activeJoyPointer.id) {
+        const dx = pointer.x - joyBase.x;
+        const dy = pointer.y - joyBase.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx);
+        
+        if (dist > joyRadius) {
+          joyThumb.x = joyBase.x + Math.cos(angle) * joyRadius;
+          joyThumb.y = joyBase.y + Math.sin(angle) * joyRadius;
+        } else {
+          joyThumb.x = pointer.x;
+          joyThumb.y = pointer.y;
+        }
+
+        // Apply movement thresholds
+        this.registry.set('v_left', dx < -20);
+        this.registry.set('v_right', dx > 20);
+        this.registry.set('v_up', dy < -20);
+        this.registry.set('v_down', dy > 20);
+      }
+    });
+
+    const releaseJoy = (pointer: Phaser.Input.Pointer) => {
+      if (activeJoyPointer && pointer.id === activeJoyPointer.id) {
+        activeJoyPointer = null;
+        joyBase.setPosition(joyBaseDefaultX, joyBaseDefaultY);
+        joyThumb.setPosition(joyBaseDefaultX, joyBaseDefaultY);
+        joyBase.setAlpha(0.2);
+        joyThumb.setAlpha(0.6);
+        this.registry.set('v_left', false);
+        this.registry.set('v_right', false);
+        this.registry.set('v_up', false);
+        this.registry.set('v_down', false);
+      }
+    };
+
+    this.input.on('pointerup', releaseJoy);
+    this.input.on('pointerout', releaseJoy);
 
     // Action buttons on the right side
     const actX = width - 80;
