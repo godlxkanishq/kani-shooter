@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Violet CRT Test</title>
+  <style>
+    :root {
+      --neon-violet: #b678ff;
+      --neon-violet-dim: rgba(182, 120, 255, 0.15);
+      --bg-dark: #05000a;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Courier New', Courier, monospace;
+      overflow: hidden;
+      color: var(--neon-violet);
+    }
+
+    /* CRT Monitor Container */
+    .crt-monitor {
+      position: relative;
+      width: 90vw;
+      height: 90vh;
+      max-width: 1200px;
+      max-height: 900px;
+      background-color: var(--bg-dark);
+      border-radius: 40px;
+      overflow: hidden;
+      box-shadow: inset 0 0 100px rgba(0,0,0,0.9), 0 0 20px rgba(182, 120, 255, 0.2);
+    }
+
+    /* Background Grid */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(var(--neon-violet-dim) 1px, transparent 1px),
+        linear-gradient(90deg, var(--neon-violet-dim) 1px, transparent 1px);
+      background-size: 50px 50px;
+      background-position: center center;
+      z-index: 1;
+    }
+
+    /* Vignette & Curvature Illusion */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 100%);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Scanlines */
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0,0,0,0.2) 50%,
+        rgba(0,0,0,0.2)
+      );
+      background-size: 100% 4px;
+      z-index: 11;
+      pointer-events: none;
+    }
+
+    /* Screen Flicker Animation */
+    .flicker {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(182, 120, 255, 0.02);
+      z-index: 12;
+      pointer-events: none;
+      animation: flicker 0.15s infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.9; }
+      50% { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+
+    /* HUD Elements */
+    .hud {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      padding: 40px;
+      box-sizing: border-box;
+      font-size: 12px;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    .hud-corner { position: absolute; }
+    .top-left { top: 40px; left: 40px; }
+    .top-right { top: 40px; right: 40px; text-align: right; }
+    .bottom-left { bottom: 40px; left: 40px; }
+    .bottom-right { bottom: 40px; right: 40px; text-align: right; }
+
+    /* Top Center HUD */
+    .top-center {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ruler {
+      width: 300px;
+      height: 10px;
+      border-bottom: 2px solid var(--neon-violet);
+      position: relative;
+    }
+    .ruler::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 6px;
+      background-image: linear-gradient(90deg, var(--neon-violet) 2px, transparent 2px);
+      background-size: 10px 10px;
+    }
+    .ruler::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 12px;
+      background-image: linear-gradient(90deg, var(--neon-violet) 2px, transparent 2px);
+      background-size: 50px 50px;
+    }
+
+    .target-locked {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .diamond {
+      width: 6px;
+      height: 6px;
+      border: 1px solid var(--neon-violet);
+      transform: rotate(45deg);
+    }
+
+    /* The Question Mark Boxes */
+    .boxes-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-template-rows: repeat(7, 60px);
+      gap: 5px;
+    }
+
+    .box {
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--neon-violet);
+      background-color: var(--neon-violet-dim);
+      box-shadow: 0 0 10px var(--neon-violet), inset 0 0 15px rgba(182, 120, 255, 0.4);
+      border-radius: 2px;
+      /* Diagonal scanlines inside box to match image */
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(182, 120, 255, 0.1) 2px,
+        rgba(182, 120, 255, 0.1) 4px
+      );
+      position: relative;
+    }
+
+    /* Small corner accents on boxes */
+    .box::after {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px;
+      width: 6px; height: 6px;
+      border-top: 2px solid #fff;
+      border-left: 2px solid #fff;
+      opacity: 0.5;
+    }
+
+    /* Question mark layout map (1 = box, 0 = empty) */
+    /* 
+      . X X X .
+      X . . . X
+      . . . X .
+      . . X . .
+      . . X . .
+      . . . . .
+      . . X . .
+    */
+    .box-1 { grid-column: 2; grid-row: 1; }
+    .box-2 { grid-column: 3; grid-row: 1; }
+    .box-3 { grid-column: 4; grid-row: 1; }
+    
+    .box-4 { grid-column: 1; grid-row: 2; }
+    .box-5 { grid-column: 2; grid-row: 2; } /* extra width on left */
+    .box-6 { grid-column: 4; grid-row: 2; }
+    .box-7 { grid-column: 5; grid-row: 2; }
+    
+    .box-8 { grid-column: 4; grid-row: 3; }
+    .box-9 { grid-column: 5; grid-row: 3; }
+    
+    .box-10 { grid-column: 3; grid-row: 4; }
+    .box-11 { grid-column: 4; grid-row: 4; }
+    
+    .box-12 { grid-column: 3; grid-row: 5; }
+    
+    .box-13 { grid-column: 3; grid-row: 7; }
+
+    /* Crosshairs in the center */
+    .crosshair-h, .crosshair-v {
+      position: absolute;
+      background-color: var(--neon-violet);
+      box-shadow: 0 0 8px var(--neon-violet);
+      z-index: 4;
+    }
+    .crosshair-h {
+      top: 50%; left: 30%; right: 30%; height: 2px;
+      transform: translateY(-50%);
+      opacity: 0.5;
+    }
+    .crosshair-v {
+      left: 50%; top: 30%; bottom: 30%; width: 2px;
+      transform: translateX(-50%);
+      opacity: 0.5;
+    }
+    
+    /* HUD Frame Corners */
+    .frame-corner {
+      position: absolute;
+      width: 40px; height: 40px;
+      border: 3px solid var(--neon-violet);
+      opacity: 0.4;
+      z-index: 2;
+    }
+    .fc-tl { top: 80px; left: 80px; border-right: none; border-bottom: none; }
+    .fc-tr { top: 80px; right: 80px; border-left: none; border-bottom: none; }
+    .fc-bl { bottom: 80px; left: 80px; border-right: none; border-top: none; }
+    .fc-br { bottom: 80px; right: 80px; border-left: none; border-top: none; }
+
+  </style>
+</head>
+<body>
+
+  <div class="crt-monitor">
+    <div class="grid-bg"></div>
+    <div class="vignette"></div>
+    <div class="scanlines"></div>
+    <div class="flicker"></div>
+    
+    <!-- Crosshairs -->
+    <div class="crosshair-h"></div>
+    <div class="crosshair-v"></div>
+
+    <!-- Frame Brackets -->
+    <div class="frame-corner fc-tl"></div>
+    <div class="frame-corner fc-tr"></div>
+    <div class="frame-corner fc-bl"></div>
+    <div class="frame-corner fc-br"></div>
+
+    <div class="hud">
+      <div class="hud-corner top-left">
+        <div>SYS: OK</div>
+        <div>DATA: 34A2</div>
+        <div>BRG: 19</div>
+        <div style="margin-top:20px; color:#ff5555;">ARM</div>
+      </div>
+      
+      <div class="hud-corner top-right">
+        <div>N: 48°12'33"</div>
+        <div>W: 122°29'11"</div>
+        <div>DST: 1.2</div>
+        <div>RNG: 259 M</div>
+      </div>
+      
+      <div class="hud-corner bottom-left">
+        <div>F: 1050</div>
+      </div>
+      
+      <div class="hud-corner bottom-right">
+        <div>LOCKED</div>
+      </div>
+
+      <div class="top-center">
+        <div class="ruler"></div>
+        <div class="target-locked">
+          <div class="diamond"></div>
+          <div>TARGET LOCKED</div>
+          <div class="diamond"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="boxes-container">
+      <div class="box box-1"></div>
+      <div class="box box-2"></div>
+      <div class="box box-3"></div>
+      
+      <div class="box box-4"></div>
+      <div class="box box-5"></div>
+      <div class="box box-6"></div>
+      <div class="box box-7"></div>
+      
+      <div class="box box-8"></div>
+      <div class="box box-9"></div>
+      
+      <div class="box box-10"></div>
+      <div class="box box-11"></div>
+      
+      <div class="box box-12"></div>
+      
+      <div class="box box-13"></div>
+    </div>
+  </div>
+
+</body>
+</html>
