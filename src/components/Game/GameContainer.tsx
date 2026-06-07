@@ -143,6 +143,20 @@ export const GameContainer: React.FC<GameContainerProps> = ({ level, onBackToMen
 
       {/* React HTML HUD overlays removed - they are now handled entirely by Phaser HUDScene! */}
 
+      {/* Fullscreen Toggle for Mobile */}
+      <button 
+        onClick={() => {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => console.log(err));
+          } else {
+            document.exitFullscreen();
+          }
+        }}
+        className="absolute top-4 right-4 z-40 bg-black/50 text-white px-3 py-1.5 rounded border border-kani-purple/50 text-[10px] font-mono font-bold tracking-widest hover:bg-kani-purple/30 backdrop-blur-sm"
+      >
+        FULLSCREEN
+      </button>
+
       {/* Game Over Modal */}
       {session.isGameOver && (
         <div className="absolute inset-0 bg-black-90 flex flex-col items-center justify-center z-30 font-mono text-center">
