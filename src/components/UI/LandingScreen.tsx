@@ -21,7 +21,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ onEnter }) => {
         </div>
         
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-kani-green via-purple-500 to-purple-900 drop-shadow-[0_4px_12px_rgba(182,120,255,0.5)]">
-          KANI FORCE
+          ASTERISM RETRIEVAL
         </h1>
       </div>
 

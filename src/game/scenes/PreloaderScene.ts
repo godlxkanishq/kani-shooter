@@ -13,12 +13,12 @@ export class PreloaderScene extends Phaser.Scene {
 
     // Dynamic boot logs simulation
     const logs = [
-      'KANI FORCE SYSTEM v1.0.1...',
+      'ASTERISM RETRIEVAL SYSTEM v1.0.1...',
       'INITIALIZING 16-BIT GRAPHICS ENGINE...',
       'COMPILING WEAPON SYSTEMS...',
       'BOOTING COMBAT PROTOCOLS...',
       'LOADING LEVEL ENVIRONMENTS...',
-      'READY - KANI FORCE ENGAGED.'
+      'READY - ASTERISM RETRIEVAL ENGAGED.'
     ];
 
     let currentLogIndex = 0;

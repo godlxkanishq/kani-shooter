@@ -139,7 +139,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onStartGame }) => {
               <div>
                 <h1 className="text-xl font-black text-kani-green mb-2 flex items-center gap-2">
                   <Play className="w-5 h-5 text-kani-green fill-current" />
-                  KANI FORCE CAMPAIGN
+                  ASTERISM RETRIEVAL CAMPAIGN
                 </h1>
                 <p className="text-xs text-zinc-400 mb-6">
                   Select a Jungle Outpost or Alien Hive deployment. Completing stages earns coins, XP and upgrades!
