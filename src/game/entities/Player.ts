@@ -324,9 +324,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    // Override flip direction to always face the mouse pointer
+    // Override flip direction to always face the mouse pointer (Desktop Only)
     const pointer = this.scene.input.activePointer;
-    if (pointer.active || (pointer.x > 0 && pointer.y > 0)) {
+    if (!isTouch && (pointer.active || (pointer.x > 0 && pointer.y > 0))) {
       this.setFlipX(pointer.worldX < this.x);
     }
 
