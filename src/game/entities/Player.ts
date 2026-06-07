@@ -359,11 +359,44 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       spawnY = this.y + 6; // crouch height
     }
 
-    const angle = Phaser.Math.Angle.Between(spawnX, spawnY, pointer.worldX, pointer.worldY);
+    const isTouch = this.scene.sys.game.device.input.touch;
+    let angle = 0;
+
+    if (isTouch) {
+      // Auto-aim logic for mobile
+      let nearestDist = 600; // max auto-aim range
+      let target: Phaser.GameObjects.Sprite | null = null;
+      
+      const enemies = (this.scene as any).enemies?.getChildren() || [];
+      for (const e of enemies) {
+        if (!e.active || e.y > this.scene.scale.height) continue;
+        const dist = Phaser.Math.Distance.Between(spawnX, spawnY, e.x, e.y);
+        
+        // Only lock on if the enemy is roughly in front of the player (depending on flipX)
+        // or if they are very close.
+        const isBehind = this.flipX ? (e.x > this.x + 20) : (e.x < this.x - 20);
+        if (dist < nearestDist && !isBehind) {
+          nearestDist = dist;
+          target = e as Phaser.GameObjects.Sprite;
+        }
+      }
+
+      if (target) {
+        angle = Phaser.Math.Angle.Between(spawnX, spawnY, target.x, target.y);
+        // Automatically flip player to face the target if slightly behind
+        if (target.x < this.x && !this.flipX) this.setFlipX(true);
+        if (target.x > this.x && this.flipX) this.setFlipX(false);
+      } else {
+        // Just shoot forward if no target found
+        angle = this.flipX ? Math.PI : 0;
+      }
+    } else {
+      // 360 degree mouse aim for desktop
+      angle = Phaser.Math.Angle.Between(spawnX, spawnY, pointer.worldX, pointer.worldY);
+    }
+
     let vx = Math.cos(angle) * 400;
     let vy = Math.sin(angle) * 400;
-
-    // (Legacy aiming overrides removed in favor of 360 degree mouse aim)
 
     // Custom firing logic for SpreadShot, Plasma, Laser, etc.
     if (this.onFireCallback) {
