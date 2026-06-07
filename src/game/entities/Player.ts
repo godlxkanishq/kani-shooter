@@ -228,7 +228,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Disable touch-to-shoot on mobile so they don't fire while using the joystick
     const isTouch = this.scene.sys.game.device.input.touch;
     const mouseShoot = !isTouch && this.scene.input.activePointer.leftButtonDown();
-    const holdShoot = keys.shoot.isDown || keys.shoot2.isDown || keys.shoot3.isDown || keys.shoot4.isDown || v_shoot || mouseShoot;
+    
+    // Auto-fire if enemies are in range on mobile
+    let autoFire = false;
+    if (isTouch) {
+      const enemies = (this.scene as any).enemies?.getChildren() || [];
+      for (const e of enemies) {
+        if (!e.active || e.y > this.scene.scale.height) continue;
+        const dist = Phaser.Math.Distance.Between(this.x, this.y, e.x, e.y);
+        const isBehind = this.flipX ? (e.x > this.x + 20) : (e.x < this.x - 20);
+        if (dist < 600 && !isBehind) {
+          autoFire = true;
+          break;
+        }
+      }
+    }
+
+    const holdShoot = keys.shoot.isDown || keys.shoot2.isDown || keys.shoot3.isDown || keys.shoot4.isDown || v_shoot || mouseShoot || autoFire;
     if (isLadderNearby) {
       if (holdUp) {
         this.setClimbing(true);
